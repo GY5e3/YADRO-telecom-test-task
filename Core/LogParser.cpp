@@ -8,6 +8,34 @@ LogParser::LogParser(const std::string &filename) : p_file(filename), p_logLines
     {
         if (!p_file.is_open())
             throw std::runtime_error("File could not be opened");
+
+        std::string line;
+
+        // Получение количества игровых столов в компьютерном клубе
+        std::getline(p_file, line);
+        p_logLinesCounter++;
+        p_freeGameTablesCount = stoi_decorator(line);
+
+        // Получение времени открытия и закрытия компьютерного клуба
+        std::getline(p_file, line);
+        p_logLinesCounter++;
+        std::istringstream iss(line);
+        std::string token;
+        std::vector<std::string> tokens;
+        while (iss >> token)
+            tokens.push_back(token);
+        if (tokens.size() != 2)
+            throw std::invalid_argument("Incorrect log line format");
+        p_workTimeBegin.StringToTime(tokens[0]);
+        p_workTimeEnd.StringToTime(tokens[1]);
+        if (p_workTimeEnd < p_workTimeBegin)
+            throw std::invalid_argument("WorkTimeEnd can't be less than workTimeBegin");
+
+        // Получение стоимости за час игры в компьютерном клубе
+        std::getline(p_file, line);
+        p_logLinesCounter++;
+        m_pricePerHour = stoi_decorator(line);
+        p_gameTables.resize(p_freeGameTablesCount, GameTable());
     }
     catch (const std::runtime_error &e)
     {
@@ -19,7 +47,6 @@ int LogParser::Execute()
 {
     try
     {
-        parseHeader();
 
         std::cout << p_workTimeBegin.GetString() << std::endl;
 
@@ -82,44 +109,6 @@ void LogParser::endGameSession(const std::string &currentClient, const Time &cur
     p_gameTables[index].SetBusy(false);
     p_clientInfo[currentClient].gameTableNumber = GAME_TABLE_IS_UNDEFINED;
     p_freeGameTablesCount++;
-}
-// Обработка заголовка лога
-void LogParser::parseHeader()
-{
-    std::string line;
-
-    // Получение количества игровых столов в компьютерном клубе
-    std::getline(p_file, line);
-    p_logLinesCounter++;
-    int gameTablesCount = stoi_decorator(line);
-    p_freeGameTablesCount = gameTablesCount;
-
-    // Получение времени открытия и закрытия компьютерного клуба
-    std::getline(p_file, line);
-    p_logLinesCounter++;
-    std::istringstream iss(line);
-    std::string token;
-    std::vector<std::string> tokens;
-    while (iss >> token)
-    {
-        tokens.push_back(token);
-    }
-    if (tokens.size() != 2)
-    {
-        throw std::invalid_argument("Incorrect log line format");
-    }
-    p_workTimeBegin.StringToTime(tokens[0]);
-    p_workTimeEnd.StringToTime(tokens[1]);
-    if (p_workTimeEnd < p_workTimeBegin)
-    {
-        throw std::invalid_argument("WorkTimeEnd can't be less than workTimeBegin");
-    }
-
-    // Получение стоимости за час игры в компьютерном клубе
-    std::getline(p_file, line);
-    p_logLinesCounter++;
-    m_pricePerHour = stoi_decorator(line); 
-    p_gameTables.resize(gameTablesCount, GameTable());
 }
 
 // Обработка тела лога
@@ -220,14 +209,14 @@ void LogParser::handleClientTakeGameTable(const std::vector<std::string> &tokens
         std::cout << currentTime.GetString() + " " << OutgoingEventID::EventError << " PlaceIsBusy" << std::endl;
         return;
     }
-    //Закончили предыдущую игровую сессию, если таковая была
+    // Закончили предыдущую игровую сессию, если таковая была
     if (p_clientInfo[currentClient].gameTableNumber != GAME_TABLE_IS_UNDEFINED)
         endGameSession(currentClient, currentTime);
 
     startGameSession(currentClient, currentGameTable, currentTime);
 }
 
-//ID 3. Клиент ожидает
+// ID 3. Клиент ожидает
 void LogParser::handleClientIsWaiting(const std::string &currentClient, Time &currentTime)
 {
     // В ТЗ это явно не прописано, но могу предположить, что если клиент не вошёл в клуб, то и ожидать он не может
@@ -251,7 +240,7 @@ void LogParser::handleClientIsWaiting(const std::string &currentClient, Time &cu
     p_queueClients.push(currentClient);
 }
 
-//ID 4. Клиент ушёл
+// ID 4. Клиент ушёл
 void LogParser::handleClientHasLeft(const std::string &currentClient, Time &currentTime)
 {
     if (p_clientInfo.find(currentClient) == p_clientInfo.end())

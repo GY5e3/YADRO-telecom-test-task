@@ -20,6 +20,6 @@ public:
     int GetMinutes() const;
 
 private:
-    int p_hours;
-    int p_minutes;
+    int p_hours = 0;
+    int p_minutes = 0;
 };

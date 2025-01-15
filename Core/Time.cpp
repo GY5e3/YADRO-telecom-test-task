@@ -1,6 +1,6 @@
 #include "Time.hpp"
 
-Time::Time() : p_hours(0), p_minutes(0) {}
+Time::Time() = default;
 
 Time::Time(int hours, int minutes) : p_hours(hours), p_minutes(minutes) {}
 

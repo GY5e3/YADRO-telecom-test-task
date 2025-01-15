@@ -1,8 +1,6 @@
 #include "GameTable.hpp"
 
-GameTable::GameTable() : p_profit(0),
-                         p_isBusy(false),
-                         p_client("") {}
+GameTable::GameTable() = default;
 
 std::string GameTable::GetString() const
 {
