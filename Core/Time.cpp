@@ -4,6 +4,8 @@ Time::Time() = default;
 
 Time::Time(int hours, int minutes) : p_hours(hours), p_minutes(minutes) {}
 
+Time::Time(const std::string &data) { StringToTime(data); }
+
 int Time::GetHours() const { return p_hours; };
 
 int Time::GetMinutes() const { return p_minutes; };
@@ -38,12 +40,12 @@ Time Time::operator-(const Time &rightOperand) const
 void Time::StringToTime(const std::string &data)
 {
     if (data.length() != 5 || data[2] != ':')
-        throw std::invalid_argument("Can`t be converted from string to Time");
+        throw std::runtime_error("Can`t be converted from string to Time");
     utils::StoiDecorator safeStoi;
     p_hours = safeStoi(data.substr(0, 2));
     if (p_hours < 0 || p_hours > 23)
-        throw std::invalid_argument("Hours must be in the range from 0 to 23");
+        throw std::runtime_error("Hours must be in the range from 0 to 23");
     p_minutes = safeStoi(data.substr(3, 2));
     if (p_minutes < 0 || p_minutes > 59)
-        throw std::invalid_argument("Minutes must be in the range from 0 to 59");
+        throw std::runtime_error("Minutes must be in the range from 0 to 59");
 }

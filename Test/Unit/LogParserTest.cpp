@@ -14,7 +14,7 @@ TEST_F(LogParserTest, Парсинг_заголовка_лога)
 		std::streambuf *oldCout = std::cout.rdbuf();
 		std::cout.rdbuf(newCout.rdbuf());
 
-		logParser = LogParser("test_log_invalid.txt");
+		logParser = LogHandler("test_log_invalid.txt");
 
 		std::cout.rdbuf(oldCout);
 		std::string result = newCout.str();
@@ -34,7 +34,7 @@ TEST_F(LogParserTest, Парсинг_события_в_теле_лога)
 											   "10:00 2 client1\n"};
 	for (const auto testCase : negativeTestCases)
 	{
-		logParser = LogParser("test_log_invalid.txt");
+		logParser = LogHandler("test_log_invalid.txt");
 		SetHeaderProperties();
 		std::ofstream testLogFile("test_log_invalid.txt");
 		testLogFile << testCase;
@@ -86,7 +86,7 @@ TEST_F(LogParserTest, Обработка_события_из_тела_лога)
 		testLogFile << testCase.first;
 		testLogFile.close();
 
-		logParser = LogParser("unit_test.txt");
+		logParser = LogHandler("unit_test.txt");
 		SetHeaderProperties();
 
 		std::ostringstream newCout;

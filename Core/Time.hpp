@@ -9,11 +9,12 @@ class Time
 public:
     Time();
     Time(int hours, int minutes);
+    Time(const std::string &data);
 
     bool operator<(const Time &rightOperand) const;
     Time operator+(const Time &rightOperand) const;
     Time operator-(const Time &rightOperand) const;
-    void StringToTime(const std::string &);
+    void StringToTime(const std::string &data);
 
     std::string GetString() const;
     int GetHours() const;

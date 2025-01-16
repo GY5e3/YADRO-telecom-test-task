@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "LogParser.hpp"
+#include "LogHandler.hpp"
 
 int main(int argc, char const *argv[])
 {
@@ -9,6 +10,9 @@ int main(int argc, char const *argv[])
         std::cout << "Argument with file name is missing" << std::endl;
         return 1;
     }
-    LogParser parser(argv[1]);
-    return parser.Execute();
+    LogParser parser;
+    if(parser(argv[1]))
+        return 1;
+    LogHandler handler(argv[1]);
+    return handler.Execute();
 }

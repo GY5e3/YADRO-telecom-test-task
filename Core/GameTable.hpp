@@ -16,6 +16,6 @@ public:
 
 private:
     bool p_isBusy = false;
-    int p_profit;
+    int p_profit = 0;
     Time p_busyTime;
 };

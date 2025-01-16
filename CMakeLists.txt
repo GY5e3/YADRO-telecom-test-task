@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
     Core/main.cpp
     Core/FastQueue.cpp
     Core/GameTable.cpp
+    Core/LogHandler.cpp
     Core/LogParser.cpp
     Core/Time.cpp
     Core/utils.cpp

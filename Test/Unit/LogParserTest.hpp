@@ -12,7 +12,7 @@ class LogParserTest : public testing::Test
 {
 public:
 protected:
-    LogParser logParser;
+    LogHandler logParser;
     void SetHeaderProperties() {
         logParser.p_logLinesCounter = 3;
         logParser.p_workTimeBegin.StringToTime("09:00");
