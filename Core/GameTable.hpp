@@ -15,7 +15,7 @@ public:
     std::string GetString() const;
 
 private:
-    bool p_isBusy = false;
-    int p_profit = 0;
-    Time p_busyTime;
+    bool m_isBusy = false;
+    int m_profit = 0;
+    Time m_busyTime;
 };

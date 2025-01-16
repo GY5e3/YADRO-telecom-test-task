@@ -18,48 +18,40 @@ public:
     friend class LogParserTest;
 
     LogHandler();
-    LogHandler(const std::string &filename);
 
-    int Execute();
+    void Execute(const std::string &filename);
 
 private:
     struct ClientSession
     {
     public:
-        int gameTableNumber;
-        Time startSessionTime;
+        int GameTableNumber;
+        Time StartSessionTime;
 
-        ClientSession() : gameTableNumber(GAME_TABLE_IS_UNDEFINED) {}
+        ClientSession() : GameTableNumber(GAME_TABLE_IS_UNDEFINED) {}
 
-        ClientSession(int gameTableNumber, Time startSessionTime) : gameTableNumber(gameTableNumber),
-                                                                    startSessionTime(startSessionTime) {}
+        ClientSession(int gameTableNumber, Time startSessionTime) : GameTableNumber(gameTableNumber),
+                                                                    StartSessionTime(startSessionTime) {}
     };
 
-    std::ifstream p_file;
-
-   // int p_logLinesCounter; // Счётчик строк в логе
     int m_pricePerHour;
-    Time p_workTimeBegin; // Время открытия компьютерного клуба
-    Time p_workTimeEnd;   // Время закрытия компьютерного клуба
+    Time m_workTimeBegin; // Время открытия компьютерного клуба
+    Time m_workTimeEnd;   // Время закрытия компьютерного клуба
 
-    std::vector<GameTable> p_gameTables;                         // Перечень всех игровых столов
-    int p_freeGameTablesCount;                                   // Количество незанятых игровых столов
-    std::unordered_map<std::string, ClientSession> p_clientInfo; // Отображение для клиента и данных о его игровой сессии
-    FastQueue p_queueClients;                                    // Очередь клиентов, ожидающих освобождения любого игрового стола
+    std::vector<GameTable> m_gameTables;                         // Перечень всех игровых столов
+    int m_freeGameTablesCount;                                   // Количество незанятых игровых столов
+    std::unordered_map<std::string, ClientSession> m_clientInfo; // Отображение для клиента и данных о его игровой сессии
+    FastQueue m_queueClients;                                    // Очередь клиентов, ожидающих освобождения любого игрового стола
 
     utils::StoiDecorator stoi_decorator;
     utils::ClientNameParser name_parser;
 
-    void parseHeader();
-    void parseBody();
-
     void startGameSession(const std::string &currentClient, int currentGameTable, const Time &currentTime);
     void endGameSession(const std::string &currentClient, const Time &currentTime);
     
-
-    void handleEvent(const std::vector<std::string> &tokens, Time &previousTime);
-    void handleClientHasCome(const std::string &currentClient, Time &currentTime);
-    void handleClientTakeGameTable(const std::vector<std::string> &tokens, const std::string &currentClient, Time &currentTime);
-    void handleClientIsWaiting(const std::string &currentClient, Time &currentTime);
-    void handleClientHasLeft(const std::string &currentClient, Time &currentTime);
+    void handleEvent(const std::vector<std::string> &tokens);
+    void handleClientHasCome(const std::string &currentClient, const Time &currentTime);
+    void handleClientTakeGameTable(const std::string &currentClient, const Time &currentTime, int currentGameTable);
+    void handleClientIsWaiting(const std::string &currentClient, const Time &currentTime);
+    void handleClientHasLeft(const std::string &currentClient, const Time &currentTime);
 };

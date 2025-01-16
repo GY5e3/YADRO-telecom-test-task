@@ -2,45 +2,44 @@
 
 void FastQueue::push(const std::string &value)
 {
-    //auto it = p_list.insert(p_list.end(), value);
-    p_map[value] = p_list.insert(p_list.end(), value);
+    m_position[value] = m_list.insert(m_list.end(), value);
 }
 
 void FastQueue::remove(const std::string &value)
 {
-    auto it = p_map.find(value);
-    if (p_map.find(value) != p_map.end())
+    auto it = m_position.find(value);
+    if (m_position.find(value) != m_position.end())
     {
-        p_list.erase(it->second);
-        p_map.erase(it);
+        m_list.erase(it->second);
+        m_position.erase(it);
     }
 }
 
 void FastQueue::pop()
 {
-    if (!p_list.empty())
+    if (!m_list.empty())
     {
-        auto it = p_list.begin();
-        p_map.erase(*it);
-        p_list.erase(it);
+        auto it = m_list.begin();
+        m_position.erase(*it);
+        m_list.erase(it);
     }
 }
 
 std::string FastQueue::front() const
 {
-    if (!p_list.empty())
+    if (!m_list.empty())
     {
-        return p_list.front();
+        return m_list.front();
     }
     throw std::runtime_error("Queue is empty");
 }
 
 bool FastQueue::empty() const
 {
-    return p_list.empty();
+    return m_list.empty();
 }
 
 int FastQueue::size() const
 {
-    return p_map.size();
+    return m_position.size();
 }

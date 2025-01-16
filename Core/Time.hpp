@@ -21,6 +21,6 @@ public:
     int GetMinutes() const;
 
 private:
-    int p_hours = 0;
-    int p_minutes = 0;
+    int m_hours = 0;
+    int m_minutes = 0;
 };

@@ -4,21 +4,21 @@ GameTable::GameTable() = default;
 
 std::string GameTable::GetString() const
 {
-    return std::to_string(p_profit) + " " + p_busyTime.GetString();
+    return std::to_string(m_profit) + " " + m_busyTime.GetString();
 }
 void GameTable::AddDeltaTime(const Time &deltaTime)
 {
-    p_busyTime = p_busyTime + deltaTime;
+    m_busyTime = m_busyTime + deltaTime;
 }
 void GameTable::AddProfit(int profit)
 {
-    p_profit += profit;
+    m_profit += profit;
 }
 bool GameTable::IsBusy() const
 {
-    return p_isBusy;
+    return m_isBusy;
 }
 void GameTable::SetBusy(bool isBusy)
 {
-    p_isBusy = isBusy;
+    m_isBusy = isBusy;
 }

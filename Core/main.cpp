@@ -10,9 +10,12 @@ int main(int argc, char const *argv[])
         std::cout << "Argument with file name is missing" << std::endl;
         return 1;
     }
+
     LogParser parser;
     if(parser(argv[1]))
         return 1;
-    LogHandler handler(argv[1]);
-    return handler.Execute();
+        
+    LogHandler handler;
+    handler.Execute(argv[1]);
+    return 0;
 }

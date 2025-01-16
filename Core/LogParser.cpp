@@ -3,9 +3,11 @@
 int LogParser::operator()(const std::string &filepath) const
 {
     std::ifstream file(filepath);
-    int logLinesCounter = 0; // Счётчик строк в логе
-    Time workTimeBegin;      // Время открытия компьютерного клуба
+    int logLinesCounter = 0;
+    Time workTimeBegin;     
     Time workTimeEnd;
+    utils::StoiDecorator stoi_decorator;
+    utils::ClientNameParser name_parser;
     try
     {
         if (!file.is_open())
@@ -16,7 +18,7 @@ int LogParser::operator()(const std::string &filepath) const
         // Получение количества игровых столов в компьютерном клубе
         std::getline(file, line);
         logLinesCounter++;
-        utils::stoi_decorator(line);
+        stoi_decorator(line);
 
         // Получение времени открытия и закрытия компьютерного клуба
         std::getline(file, line);
@@ -36,7 +38,7 @@ int LogParser::operator()(const std::string &filepath) const
         // Получение стоимости за час игры в компьютерном клубе
         std::getline(file, line);
         logLinesCounter++;
-        utils::stoi_decorator(line);
+        stoi_decorator(line);
 
         Time previousTime = workTimeBegin;
         while (std::getline(file, line))
@@ -56,7 +58,7 @@ int LogParser::operator()(const std::string &filepath) const
             if (logLinesCounter > LOG_HEADER_END && currentTime < previousTime)
                 throw std::runtime_error("Unsorted lines in the log");
 
-            int currentEvent = utils::stoi_decorator(tokens[1]);
+            int currentEvent = stoi_decorator(tokens[1]);
             switch (currentEvent)
             {
             case IncomingEventID::ClientHasCome:
@@ -68,14 +70,14 @@ int LogParser::operator()(const std::string &filepath) const
             case IncomingEventID::ClientTakeGameTable:
                 if (tokens.size() != 4)
                     throw std::runtime_error("Incorrect log line format");
-                utils::stoi_decorator(tokens[3]);
+                stoi_decorator(tokens[3]);
                 break;
             default:
                 throw std::runtime_error("Unknown incoming event");
                 break;
             }
 
-            std::string currentClient = utils::name_parser(tokens[2]);
+            std::string currentClient = name_parser(tokens[2]);
 
             previousTime = currentTime;
         }

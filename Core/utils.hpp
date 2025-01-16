@@ -2,10 +2,13 @@
 
 #include <iostream>
 
-
+//Клиент не сидит за игровым столом
 const int GAME_TABLE_IS_UNDEFINED = -1;
+//Маркер конца заголовка лога
 const int LOG_HEADER_END = 4;
+//Минимальное кол-во аргументов строки в теле лога
 const int MIN_LOG_LINE_ARGUMENTS = 3;
+//Максимальное кол-во аргументов строки в теле лога
 const int MAX_LOG_LINE_ARGUMENTS = 4;
 
 enum IncomingEventID
@@ -24,6 +27,7 @@ enum OutgoingEventID
 
 namespace utils
 {
+    /// @brief Класс-обёртка для std::stoi с дополнительной обработкой строки
     class StoiDecorator
     {
     public:
@@ -35,7 +39,4 @@ namespace utils
     public:
         std::string operator()(const std::string &) const;
     };
-    
-    inline StoiDecorator stoi_decorator;
-    inline ClientNameParser name_parser;
 }

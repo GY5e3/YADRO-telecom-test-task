@@ -21,6 +21,6 @@ public:
     int size() const;
 
 private:
-    std::list<std::string> p_list;                                                    
-    std::unordered_map<std::string, std::list<std::string>::iterator> p_map; 
+    std::list<std::string> m_list;                                                    
+    std::unordered_map<std::string, std::list<std::string>::iterator> m_position; 
 };
