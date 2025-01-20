@@ -1,11 +1,6 @@
 #pragma once
 
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <vector>
-#include <streambuf>
-#include <memory>
+#include <string>
 
 #include <gtest/gtest.h>
 

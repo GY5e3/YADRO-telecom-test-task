@@ -2,7 +2,16 @@
 
 Time::Time() = default;
 
-Time::Time(int hours, int minutes) : m_hours(hours), m_minutes(minutes) {}
+Time::Time(int hours, int minutes)
+{
+    if (hours < 0 || hours > 23)
+        throw std::runtime_error("Hours must be in the range from 0 to 23");
+    m_hours = hours;
+
+    if (minutes < 0 || minutes > 59)
+        throw std::runtime_error("Minutes must be in the range from 0 to 59");
+    m_minutes = minutes;
+}
 
 Time::Time(const std::string &data) { SetTime(data); }
 
@@ -44,7 +53,7 @@ void Time::SetTime(const std::string &data)
     utils::StoiDecorator safeStoi;
     m_hours = safeStoi(data.substr(0, 2));
     if (m_hours < 0 || m_hours > 23)
-        throw std::runtime_error("Hours must be in the range from 0 to 23     " + data.substr(0, 2) + "      " + std::to_string(m_hours));
+        throw std::runtime_error("Hours must be in the range from 0 to 23");
     m_minutes = safeStoi(data.substr(3, 2));
     if (m_minutes < 0 || m_minutes > 59)
         throw std::runtime_error("Minutes must be in the range from 0 to 59");
