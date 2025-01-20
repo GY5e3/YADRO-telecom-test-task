@@ -14,7 +14,7 @@ public:
     bool operator<(const Time &rightOperand) const;
     Time operator+(const Time &rightOperand) const;
     Time operator-(const Time &rightOperand) const;
-    void StringToTime(const std::string &data);
+    void SetTime(const std::string &data);
 
     std::string GetString() const;
     int GetHours() const;

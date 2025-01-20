@@ -4,7 +4,7 @@ Time::Time() = default;
 
 Time::Time(int hours, int minutes) : m_hours(hours), m_minutes(minutes) {}
 
-Time::Time(const std::string &data) { StringToTime(data); }
+Time::Time(const std::string &data) { SetTime(data); }
 
 int Time::GetHours() const { return m_hours; };
 
@@ -37,7 +37,7 @@ Time Time::operator-(const Time &rightOperand) const
     return Time(hours, minutes);
 }
 
-void Time::StringToTime(const std::string &data)
+void Time::SetTime(const std::string &data)
 {
     if (data.length() != 5 || data[2] != ':')
         throw std::runtime_error("Can`t be converted from string to Time");

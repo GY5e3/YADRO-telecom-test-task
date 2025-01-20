@@ -22,8 +22,8 @@ void LogHandler::Execute(const std::string &filename)
     std::vector<std::string> tokens;
     while (iss >> token)
         tokens.push_back(token);
-    m_workTimeBegin.StringToTime(tokens[0]);
-    m_workTimeEnd.StringToTime(tokens[1]);
+    m_workTimeBegin.SetTime(tokens[0]);
+    m_workTimeEnd.SetTime(tokens[1]);
 
     // Получение стоимости за час игры в компьютерном клубе
     std::getline(file, bufferLine);
@@ -47,60 +47,63 @@ void LogHandler::Execute(const std::string &filename)
 
     // Клиенты, которые не покинули компьютерный клуб к моменту его закрытия
     std::vector<std::string> lastClients;
+    // Получение списка оставшихся клиентов и завершение всех игровых сессий
     for (const auto &lastClient : m_clientInfo)
     {
         lastClients.push_back(lastClient.first);
-        if (m_clientInfo[lastClient.first].GameTableNumber != GAME_TABLE_IS_UNDEFINED)
-            endGameSession(lastClient.first, m_workTimeEnd);
+        endGameSession(lastClient.first, m_workTimeEnd);
+    }
 
-        m_queueClients.remove(lastClient.first);
-    }
-    while (m_queueClients.size())
-    {
-        lastClients.push_back(m_queueClients.front());
-        m_queueClients.pop();
-    }
     std::sort(lastClients.begin(), lastClients.end());
-
     for (const auto client : lastClients)
     {
         std::cout << m_workTimeEnd.GetString() + " " << OutgoingEventID::ClientHasLeftForced << " " + client << std::endl;
     }
     std::cout << m_workTimeEnd.GetString() << std::endl;
+    // Вывод информации по всем игровым столам по завершению рабочего дня
     for (size_t i = 1; i < m_gameTables.size(); i++)
     {
         std::cout << i << " " << m_gameTables[i].GetString() << std::endl;
     }
 }
 
-void LogHandler::startGameSession(const std::string &currentClient, int currentGameTable, const Time &currentTime)
+bool LogHandler::startGameSession(const std::string &currentClient, int currentGameTable, const Time &currentTime)
 {
+    if (currentGameTable == GAME_TABLE_IS_UNDEFINED)
+        return false;
+
     m_clientInfo[currentClient].GameTableNumber = currentGameTable;
     m_clientInfo[currentClient].StartSessionTime = currentTime;
     m_gameTables[currentGameTable].SetBusy(true);
     m_freeGameTablesCount--;
+
+    return true;
 }
 
-void LogHandler::endGameSession(const std::string &currentClient, const Time &currentTime)
+bool LogHandler::endGameSession(const std::string &currentClient, const Time &currentTime)
 {
-    int index = m_clientInfo[currentClient].GameTableNumber;
+    int currentGameTable = m_clientInfo[currentClient].GameTableNumber;
+
+    if (currentGameTable == GAME_TABLE_IS_UNDEFINED)
+        return false;
 
     Time deltaTime = currentTime - m_clientInfo[currentClient].StartSessionTime;
     int profit = (deltaTime.GetHours() + (deltaTime.GetMinutes() > 0)) * m_pricePerHour;
+    m_gameTables[currentGameTable].AddDeltaTime(deltaTime);
+    m_gameTables[currentGameTable].AddProfit(profit);
 
-    m_gameTables[index].AddDeltaTime(deltaTime);
-    m_gameTables[index].AddProfit(profit);
-
-    m_gameTables[index].SetBusy(false);
     m_clientInfo[currentClient].GameTableNumber = GAME_TABLE_IS_UNDEFINED;
+    m_clientInfo[currentClient].StartSessionTime = Time("00:00");
+    m_gameTables[currentGameTable].SetBusy(false);
     m_freeGameTablesCount++;
+
+    return true;
 }
 
-// Определения типа события, к которому относится строка лога
 void LogHandler::handleEvent(const std::vector<std::string> &tokens)
 {
     Time currentTime;
-    currentTime.StringToTime(tokens[0]);
+    currentTime.SetTime(tokens[0]);
     int currentEvent = stoi_decorator(tokens[1]);
     std::string currentClient = name_parser(tokens[2]);
     int currentGameTable = GAME_TABLE_IS_UNDEFINED;
@@ -125,7 +128,6 @@ void LogHandler::handleEvent(const std::vector<std::string> &tokens)
     }
 }
 
-// ID 1. Клиент пришёл
 void LogHandler::handleClientHasCome(const std::string &currentClient, const Time &currentTime)
 {
     if (currentTime < m_workTimeBegin || m_workTimeEnd < currentTime)
@@ -141,7 +143,6 @@ void LogHandler::handleClientHasCome(const std::string &currentClient, const Tim
     m_clientInfo[currentClient].GameTableNumber = GAME_TABLE_IS_UNDEFINED;
 }
 
-// ID 2. Клиент сел за стол
 void LogHandler::handleClientTakeGameTable(const std::string &currentClient,
                                            const Time &currentTime,
                                            int currentGameTable)
@@ -163,13 +164,11 @@ void LogHandler::handleClientTakeGameTable(const std::string &currentClient,
         return;
     }
     // Закончили предыдущую игровую сессию, если таковая была
-    if (m_clientInfo[currentClient].GameTableNumber != GAME_TABLE_IS_UNDEFINED)
-        endGameSession(currentClient, currentTime);
+    endGameSession(currentClient, currentTime);
 
     startGameSession(currentClient, currentGameTable, currentTime);
 }
 
-// ID 3. Клиент ожидает
 void LogHandler::handleClientIsWaiting(const std::string &currentClient, const Time &currentTime)
 {
     // В ТЗ это явно не прописано, но могу предположить, что если клиент не вошёл в клуб, то и ожидать он не может
@@ -193,7 +192,6 @@ void LogHandler::handleClientIsWaiting(const std::string &currentClient, const T
     m_queueClients.push(currentClient);
 }
 
-// ID 4. Клиент ушёл
 void LogHandler::handleClientHasLeft(const std::string &currentClient, const Time &currentTime)
 {
     if (m_clientInfo.find(currentClient) == m_clientInfo.end())
@@ -204,19 +202,17 @@ void LogHandler::handleClientHasLeft(const std::string &currentClient, const Tim
 
     int currentGameTable = m_clientInfo[currentClient].GameTableNumber;
 
-    if (currentGameTable != GAME_TABLE_IS_UNDEFINED)
-    {
-        endGameSession(currentClient, currentTime);
-        if (!m_queueClients.empty())
-        {
-            std::string nextClient = m_queueClients.front();
-            m_queueClients.pop();
-
-            startGameSession(nextClient, currentGameTable, currentTime);
-            std::cout << currentTime.GetString() + " " << OutgoingEventID::ClientFromQueueTakeGameTable
-                      << " " + nextClient + " " + std::to_string(currentGameTable) << std::endl;
-        }
-    }
+    endGameSession(currentClient, currentTime);
     m_clientInfo.erase(currentClient);
     m_queueClients.remove(currentClient);
+
+    if (m_queueClients.size())
+    {
+        std::string nextClient = m_queueClients.front();
+        m_queueClients.pop();
+
+        if (startGameSession(nextClient, currentGameTable, currentTime))
+            std::cout << currentTime.GetString() + " " << OutgoingEventID::ClientFromQueueTakeGameTable
+                      << " " + nextClient + " " + std::to_string(currentGameTable) << std::endl;
+    }
 }

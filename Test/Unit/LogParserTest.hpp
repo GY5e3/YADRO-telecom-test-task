@@ -15,8 +15,8 @@ protected:
     LogHandler logParser;
     void SetHeaderProperties() {
       //  logParser.p_logLinesCounter = 3;
-        logParser.m_workTimeBegin.StringToTime("09:00");
-        logParser.m_workTimeEnd.StringToTime("19:00");
+        logParser.m_workTimeBegin.SetTime("09:00");
+        logParser.m_workTimeEnd.SetTime("19:00");
         logParser.m_freeGameTablesCount = 3;
       //  logParser.p_gameTables.resize(logParser.p_freeGameTablesCount, GameTable(10));
     };
