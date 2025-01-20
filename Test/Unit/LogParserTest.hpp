@@ -1,31 +1,33 @@
 #pragma once
 
-#include <gtest/gtest.h>
 #include <sstream>
 #include <iostream>
 #include <vector>
 #include <streambuf>
+#include <memory>
 
-#include "../../Core/LogHandler.hpp"
+#include <gtest/gtest.h>
+
+#include "LogParser.hpp"
+
+const std::string FILENAME = "test.txt";
 
 class LogParserTest : public testing::Test
 {
-public:
 protected:
-    LogHandler logParser;
-    void SetHeaderProperties() {
-      //  logParser.p_logLinesCounter = 3;
-        logParser.m_workTimeBegin.SetTime("09:00");
-        logParser.m_workTimeEnd.SetTime("19:00");
-        logParser.m_freeGameTablesCount = 3;
-      //  logParser.p_gameTables.resize(logParser.p_freeGameTablesCount, GameTable(10));
-    };
-    void ParseBody()
+    LogParser logParser;
+
+    std::streambuf* m_cout;
+    std::ostringstream m_result;
+    std::ofstream m_testFile;
+
+    void SetUp()
     {
-        logParser.parseBody();
+        m_cout = std::cout.rdbuf();
+        std::cout.rdbuf(m_result.rdbuf());
     }
-    void ParseHeader()
+    void TearDown()
     {
-        logParser.parseHeader();
+        std::cout.rdbuf(m_cout);
     }
 };

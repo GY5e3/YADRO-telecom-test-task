@@ -4,8 +4,6 @@
 #include <vector>
 #include <streambuf>
 
-#include "../../Core/LogParser.hpp"
-
 int main(int argc, char *argv[])
 {
     testing::InitGoogleTest(&argc, argv);

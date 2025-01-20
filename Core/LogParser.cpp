@@ -4,14 +4,14 @@ int LogParser::operator()(const std::string &filepath) const
 {
     std::ifstream file(filepath);
     int logLinesCounter = 0;
-    Time workTimeBegin;     
+    Time workTimeBegin;
     Time workTimeEnd;
     utils::StoiDecorator stoi_decorator;
     utils::ClientNameParser name_parser;
     try
     {
         if (!file.is_open())
-            throw std::runtime_error("File could not be opened");
+            throw std::invalid_argument("File could not be opened");
 
         std::string line;
 
@@ -40,7 +40,7 @@ int LogParser::operator()(const std::string &filepath) const
         logLinesCounter++;
         stoi_decorator(line);
 
-        //Проверка корректности остальных строк лога
+        // Проверка корректности остальных строк лога
         Time previousTime = workTimeBegin;
         while (std::getline(file, line))
         {
@@ -52,16 +52,16 @@ int LogParser::operator()(const std::string &filepath) const
             while (iss >> token)
                 tokens.push_back(token);
 
-            //Проверка корректности количества аргументов строки лога
+            // Проверка корректности количества аргументов строки лога
             if (tokens.size() < MIN_LOG_LINE_ARGUMENTS || tokens.size() > MAX_LOG_LINE_ARGUMENTS)
                 throw std::runtime_error("Incorrect log line format");
 
-            //Строки должны быть отсортированы по времени
+            // Строки должны быть отсортированы по времени
             Time currentTime(tokens[0]);
             if (logLinesCounter > LOG_HEADER_END && currentTime < previousTime)
                 throw std::runtime_error("Unsorted lines in the log");
 
-            //Проверка корректности входящего события
+            // Проверка корректности входящего события
             int currentEvent = stoi_decorator(tokens[1]);
             switch (currentEvent)
             {
@@ -74,14 +74,14 @@ int LogParser::operator()(const std::string &filepath) const
             case IncomingEventID::ClientTakeGameTable:
                 if (tokens.size() != 4)
                     throw std::runtime_error("Incorrect log line format");
-                //В случае этого события нужно дополнительно проверить корректность номера занимаемого стола
+                // В случае этого события нужно дополнительно проверить корректность номера занимаемого стола
                 stoi_decorator(tokens[3]);
                 break;
             default:
                 throw std::runtime_error("Unknown incoming event");
                 break;
             }
-            //Проверка корректности имени клиента
+            // Проверка корректности имени клиента
             std::string currentClient = name_parser(tokens[2]);
 
             previousTime = currentTime;
@@ -90,7 +90,12 @@ int LogParser::operator()(const std::string &filepath) const
     }
     catch (const std::runtime_error &e)
     {
-        std::cout << "Line " + std::to_string(logLinesCounter) + ": " + e.what() << std::endl;
+        std::cout << "Line " + std::to_string(logLinesCounter) + ": " + e.what();
+        return 1;
+    }
+    catch (const std::invalid_argument &e)
+    {
+        std::cout << e.what();
         return 1;
     }
 

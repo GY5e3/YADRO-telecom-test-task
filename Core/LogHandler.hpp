@@ -12,10 +12,12 @@
 #include "Time.hpp"
 #include "FastQueue.hpp"
 
+//Клиент не сидит за игровым столом
+const int GAME_TABLE_IS_UNDEFINED = -1;
+
 class LogHandler
 {
 public:
-    friend class LogParserTest;
 
     LogHandler();
 
@@ -39,10 +41,10 @@ private:
     Time m_workTimeBegin; // Время открытия компьютерного клуба
     Time m_workTimeEnd;   // Время закрытия компьютерного клуба
 
-    std::vector<GameTable> m_gameTables;                         // Список всех игровых столов
-    int m_freeGameTablesCount;                                   // Количество незанятых игровых столов
+    std::vector<GameTable> m_gameTables;                           // Список всех игровых столов
+    int m_freeGameTablesCount;                                     // Количество незанятых игровых столов
     std::unordered_map<std::string, GameSessionInfo> m_clientInfo; // Отображение: имя клиента -> данные о текущей игровой сессии
-    FastQueue m_queueClients;                                    // Очередь клиентов, ожидающих освобождения любого игрового стола
+    FastQueue m_queueClients;                                      // Очередь клиентов, ожидающих освобождения любого игрового стола
 
     utils::StoiDecorator stoi_decorator;
     utils::ClientNameParser name_parser;
