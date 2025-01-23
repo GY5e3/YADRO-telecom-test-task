@@ -18,6 +18,7 @@ const int GAME_TABLE_IS_UNDEFINED = -1;
 class LogHandler
 {
 public:
+    friend class LogParserTest;
 
     LogHandler();
 

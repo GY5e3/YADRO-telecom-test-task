@@ -12,6 +12,9 @@ FetchContent_Declare(
 include_directories(${CMAKE_SOURCE_DIR}/Core)
 include_directories(${CMAKE_SOURCE_DIR}/Test/Unit)
 
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
+
 add_executable(${PROJECT_NAME}
     Core/main.cpp
     Core/FastQueue.cpp
@@ -54,7 +57,21 @@ target_link_libraries(TimeTests
     gtest_main
 )
 
+add_executable(LogHandlerTests
+    Test/Unit/LogHandlerTest.cpp
+    Core/LogHandler.cpp
+    Core/GameTable.cpp
+    Core/Time.cpp
+    Core/FastQueue.cpp
+    Core/utils.cpp
+)
+target_link_libraries(LogHandlerTests
+    gtest
+    gtest_main
+)
+
 include(GoogleTest)
 gtest_discover_tests(LogParserTests)
 gtest_discover_tests(StoiDecoratorTests)
 gtest_discover_tests(TimeTests)
+gtest_discover_tests(LogHandlerTests)

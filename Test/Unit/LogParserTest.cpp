@@ -71,6 +71,20 @@ TEST_F(LogParserTest, Header_second_line_3)
 
     EXPECT_EQ(m_result.str(), "Line 2: WorkTimeEnd can't be less than workTimeBegin");
 }
+TEST_F(LogParserTest, Header_second_line_4)
+{
+    std::stringstream test;
+    test << "1" << std::endl;
+    test << "10:00 10:00" << std::endl;
+    test << "3" << std::endl;
+    m_testFile.open(FILENAME);
+    m_testFile << test.str();
+    m_testFile.close();
+
+    logParser(FILENAME);
+
+    EXPECT_EQ(m_result.str(), "");
+}
 TEST_F(LogParserTest, Header_third_line)
 {
     std::stringstream test;
@@ -211,7 +225,7 @@ TEST_F(LogParserTest, Unsorted_lines_positive)
     test << "1" << std::endl;
     test << "10:00 18:00" << std::endl;
     test << "3" << std::endl;
-    test << "09:00 3 usr";
+    test << "09:00 1 usr";
     m_testFile.open(FILENAME);
     m_testFile << test.str();
     m_testFile.close();
@@ -251,4 +265,49 @@ TEST_F(LogParserTest, Unsorted_lines_edge_case)
     logParser(FILENAME);
 
     EXPECT_EQ(m_result.str(), "");
+}
+TEST_F(LogParserTest, event_2_in_nonworking_hour)
+{
+    std::stringstream test;
+    test << "1" << std::endl;
+    test << "10:00 18:00" << std::endl;
+    test << "3" << std::endl;
+    test << "19:00 2 usr1"<< std::endl;
+    m_testFile.open(FILENAME);
+    m_testFile << test.str();
+    m_testFile.close();
+
+    logParser(FILENAME);
+
+    EXPECT_EQ(m_result.str(), "Line 4: This type of event cannot happen in non-working hours");
+}
+TEST_F(LogParserTest, event_3_in_nonworking_hour)
+{
+    std::stringstream test;
+    test << "1" << std::endl;
+    test << "10:00 18:00" << std::endl;
+    test << "3" << std::endl;
+    test << "19:00 3 usr1"<< std::endl;
+    m_testFile.open(FILENAME);
+    m_testFile << test.str();
+    m_testFile.close();
+
+    logParser(FILENAME);
+
+    EXPECT_EQ(m_result.str(), "Line 4: This type of event cannot happen in non-working hours");
+}
+TEST_F(LogParserTest, event_4_in_nonworking_hour)
+{
+    std::stringstream test;
+    test << "1" << std::endl;
+    test << "10:00 18:00" << std::endl;
+    test << "3" << std::endl;
+    test << "19:00 4 usr1"<< std::endl;
+    m_testFile.open(FILENAME);
+    m_testFile << test.str();
+    m_testFile.close();
+
+    logParser(FILENAME);
+
+    EXPECT_EQ(m_result.str(), "Line 4: This type of event cannot happen in non-working hours");
 }

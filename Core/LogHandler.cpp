@@ -148,7 +148,7 @@ void LogHandler::handleClientTakeGameTable(const std::string &currentClient,
                                            int currentGameTable)
 {
     // В ТЗ это явно не прописано, поэтому при попытке клиента занять несуществующий стол будем писать в логе такую ошибку
-    if (currentGameTable < 0 || currentGameTable >= m_gameTables.size())
+    if (currentGameTable <= 0 || currentGameTable >= m_gameTables.size())
     {
         std::cout << currentTime.GetString() + " " << OutgoingEventID::EventError << " TableUnknown" << std::endl;
         return;
@@ -183,7 +183,8 @@ void LogHandler::handleClientIsWaiting(const std::string &currentClient, const T
         std::cout << currentTime.GetString() + " " << OutgoingEventID::EventError << " ICanWaitNoLonger!" << std::endl;
         return;
     }
-    if (m_queueClients.size() > m_gameTables.size())
+    // Здесь используется знак '>=' из-за того, что размер gameTables на 1 больше фактического кол-ва столов, чтобы избежать 0-индексацию в коде
+    if (m_queueClients.size() >= m_gameTables.size())
     {
         std::cout << currentTime.GetString() + " " << OutgoingEventID::ClientHasLeftForced << " " + currentClient << std::endl;
         m_clientInfo.erase(currentClient);

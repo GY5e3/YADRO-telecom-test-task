@@ -25,7 +25,7 @@ TEST_F(StoiDecoratorTest, Number_space_number)
 
     EXPECT_THROW(stoi_decorator(test), std::runtime_error);
 }
-TEST_F(StoiDecoratorTest, Few_insignificant_zero)
+TEST_F(StoiDecoratorTest, Insignificant_zero)
 {
     std::string test = "011";
 

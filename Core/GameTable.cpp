@@ -22,3 +22,7 @@ void GameTable::SetBusy(bool isBusy)
 {
     m_isBusy = isBusy;
 }
+int GameTable::GetProfit() const
+{
+    return m_profit;
+}

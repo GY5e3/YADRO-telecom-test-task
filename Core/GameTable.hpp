@@ -10,8 +10,12 @@ public:
     GameTable();
     void AddDeltaTime(const Time &time);
     void AddProfit(int profit);
+
     bool IsBusy() const;
     void SetBusy(bool isBusy);
+
+    int GetProfit() const;
+
     std::string GetString() const;
 
 private:

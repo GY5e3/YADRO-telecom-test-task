@@ -66,12 +66,19 @@ int LogParser::operator()(const std::string &filepath) const
             switch (currentEvent)
             {
             case IncomingEventID::ClientHasCome:
+                if (tokens.size() != 3)
+                    throw std::runtime_error("Incorrect log line format");
+                break;
             case IncomingEventID::ClientIsWaiting:
             case IncomingEventID::ClientHasLeft:
+                if (currentTime < workTimeBegin || workTimeEnd < currentTime)
+                    throw std::runtime_error("This type of event cannot happen in non-working hours");
                 if (tokens.size() != 3)
                     throw std::runtime_error("Incorrect log line format");
                 break;
             case IncomingEventID::ClientTakeGameTable:
+                if (currentTime < workTimeBegin || workTimeEnd < currentTime)
+                    throw std::runtime_error("This type of event cannot happen in non-working hours");
                 if (tokens.size() != 4)
                     throw std::runtime_error("Incorrect log line format");
                 // В случае этого события нужно дополнительно проверить корректность номера занимаемого стола
