@@ -21,7 +21,9 @@ int utils::StoiDecorator::operator()(const std::string &str) const
 }
 
 std::string utils::ClientNameParser::operator()(const std::string &str) const
-{
+{   
+    if(str.empty())
+        throw std::runtime_error("Invalid client name");
     for (auto c : str)
     {
         if ('a' <= c && c <= 'z' || '0' <= c && c <= '9' || c == '_' || c == '-')

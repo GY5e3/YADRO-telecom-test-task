@@ -46,6 +46,14 @@ target_link_libraries(StoiDecoratorTests
     gtest
     gtest_main
 )
+add_executable(NameParserTests
+    Test/Unit/NameParserTest.cpp
+    Core/utils.cpp
+)
+target_link_libraries(NameParserTests
+    gtest
+    gtest_main
+)
 
 add_executable(TimeTests
     Test/Unit/TimeTest.cpp
@@ -73,5 +81,6 @@ target_link_libraries(LogHandlerTests
 include(GoogleTest)
 gtest_discover_tests(LogParserTests)
 gtest_discover_tests(StoiDecoratorTests)
+gtest_discover_tests(NameParserTests)
 gtest_discover_tests(TimeTests)
 gtest_discover_tests(LogHandlerTests)
