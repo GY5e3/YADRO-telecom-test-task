@@ -9,6 +9,8 @@ FetchContent_Declare(
     GIT_TAG release-1.12.1
 )
 
+FetchContent_MakeAvailable(googletest)
+
 include_directories(${CMAKE_SOURCE_DIR}/Core)
 include_directories(${CMAKE_SOURCE_DIR}/Test/Unit)
 
